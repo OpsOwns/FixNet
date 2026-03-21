@@ -1,37 +1,18 @@
-using FixNet.Shared.Core;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FixNet.Api.Utilities;
+namespace API.Utilities;
 
-public class GlobalExceptionHandler : IExceptionHandler
+public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {
-    private readonly ILogger<GlobalExceptionHandler> _logger;
-
-    public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
-    {
-        _logger = logger;
-    }
-
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        _logger.LogError(exception, "Exception occured: {Message}", exception.Message);
+        logger.LogError(exception, "Exception occured: {Message}", exception.Message);
 
         ProblemDetails problemDetails;
 
         switch (exception)
         {
-            case BusinessException:
-                problemDetails = new ProblemDetails
-                {
-                    Status = StatusCodes.Status400BadRequest,
-                    Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.1",
-                    Title = "Business validation failed",
-                    Detail = exception.Message,
-                    Instance = httpContext.Request.Path
-                };
-                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-                break;
             default:
                 problemDetails = new ProblemDetails
                 {
