@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <AssemblyName>FixNet.Domain</AssemblyName>
+        <RootNamespace>FixNet.Domain</RootNamespace>
+    </PropertyGroup>
+
+</Project>

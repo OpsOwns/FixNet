@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Caching.Hybrid;
 
-namespace API.Utilities;
+namespace FixNet.API.Utilities;
 
 public static class CachingExtensions
 {
