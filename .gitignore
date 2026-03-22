@@ -399,3 +399,4 @@ FodyWeavers.xsd
 .idea/
 src/Api/Api.http
 .env
+*.http

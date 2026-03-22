@@ -5,27 +5,38 @@ namespace API.Utilities;
 
 public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {
-    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+    public async ValueTask<bool> TryHandleAsync(
+        HttpContext httpContext,
+        Exception exception,
+        CancellationToken cancellationToken)
     {
-        logger.LogError(exception, "Exception occured: {Message}", exception.Message);
+        logger.LogGlobalError(exception.Message, httpContext.Request.Path, exception);
 
-        ProblemDetails problemDetails;
+        const string internalErrorUrl = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1";
+        const string badRequestUrl = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.1";
 
-        switch (exception)
+        var (statusCode, title, type) = exception switch
         {
-            default:
-                problemDetails = new ProblemDetails
-                {
-                    Status = StatusCodes.Status500InternalServerError,
-                    Title = "Server Error",
-                    Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1",
-                    Detail = exception.Message
-                };
-                httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                break;
-        }
+            UnauthorizedAccessException => (StatusCodes.Status401Unauthorized, "Unauthorized Access", badRequestUrl),
+            InvalidOperationException => (StatusCodes.Status400BadRequest, "Invalid FixNet Operation", badRequestUrl),
+            KeyNotFoundException => (StatusCodes.Status404NotFound, "Resource Not Found", badRequestUrl),
+            _ => (StatusCodes.Status500InternalServerError, "Internal Server Error", internalErrorUrl)
+        };
 
-        await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken: cancellationToken);
+        var problemDetails = new ProblemDetails
+        {
+            Status = statusCode,
+            Title = title,
+            Detail = exception.Message,
+            Instance = httpContext.Request.Path,
+            Type = type
+        };
+
+        problemDetails.Extensions.Add("traceId", httpContext.TraceIdentifier);
+
+        httpContext.Response.StatusCode = statusCode;
+
+        await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
         return true;
     }

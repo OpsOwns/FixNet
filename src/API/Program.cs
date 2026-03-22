@@ -1,49 +1,36 @@
 using API.Utilities;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Caching.Hybrid;
-
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddOpenApi();
-builder.Services.AddRedis(builder.Configuration);
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-builder.Services.AddProblemDetails();
-builder.Services.AddHybridCache(options =>
-{
-    options.DefaultEntryOptions = new HybridCacheEntryOptions
-    {
-        Expiration = TimeSpan.FromMinutes(60),
-        LocalCacheExpiration = TimeSpan.FromSeconds(30)
-    };
-});
-
+builder.Services
+    .AddOpenApi()
+    .AddFixNetCaching(builder.Configuration)
+    .AddRateLimiter(options => options.AddFixNetPolicy())
+    .AddExceptionHandler<GlobalExceptionHandler>()
+    .AddProblemDetails();
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
+app.UseExceptionHandler();
+app.UseRateLimiter();
+
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
-
-app.UseExceptionHandler();
+else
+{
+    app.UseHttpsRedirection();
+}
 
 app.MapHealthChecks("/healthy", new HealthCheckOptions
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
 
-app.MapGet("/", () => Results.Ok("Hello from FixNet API - 1.0"));
-
-app.MapGet("/idp", () => Results.Ok("Działa"))
-    .AddEndpointFilter<IdempotencyFilter>();
-
-app.MapGet("/throw", () =>
-{
-    throw new Exception();
-});
+app.MapGet("/", () => Results.Content("Hello from FixNet API - 1.0", "text/plain"));
 
 app.Run();

@@ -48,7 +48,7 @@ internal sealed class IdempotencyFilter(int cacheTimeInMinutes = 60, ILogger<Ide
 
                 if (ct.IsCancellationRequested)
                 {
-                    logger?.LogWarning("Request cancelled during execution for idempotency key: {Key}", key);
+                    logger?.LogIdempotencyCancelled(key);
                     return null;
                 }
 
@@ -75,8 +75,7 @@ internal sealed class IdempotencyFilter(int cacheTimeInMinutes = 60, ILogger<Ide
             return await next(context);
         }
 
-        logger?.LogDebug("Idempotency hit for key {Key}", key);
-
+        logger?.LogIdempotencyHit(key);
         return new IdempotentResult(cached.StatusCode, cached.Json);
     }
 #pragma warning restore CA1873
