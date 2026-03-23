@@ -9,6 +9,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{73630D00-5840-470C-B2AC-F2060C108F44}"
 	ProjectSection(SolutionItems) = preProject
 		API.http = API.http
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "src\Application\Application.csproj", "{6A82A18D-29C2-42D1-A593-1E4ECDB7EBA0}"

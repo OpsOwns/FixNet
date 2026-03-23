@@ -10,7 +10,7 @@ public static class CachingExtensions
                               ?? throw new InvalidOperationException("Redis connection string is missing");
         var redisInstance = configuration["Redis:Instance"]
                             ?? throw new InvalidOperationException("Redis instance is missing");
-
+        
         services.AddStackExchangeRedisCache(options =>
         {
             options.Configuration = redisConnection;

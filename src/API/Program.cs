@@ -1,4 +1,5 @@
 using FixNet.API.Utilities;
+using FixNet.Infrastructure.Auth;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
