@@ -12,8 +12,7 @@ internal sealed class IdempotencyFilter(int cacheTimeInMinutes = 60, ILogger<Ide
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
-
-#pragma warning disable CA1873
+    
     public async ValueTask<object?> InvokeAsync(
         EndpointFilterInvocationContext context,
         EndpointFilterDelegate next)
@@ -78,7 +77,6 @@ internal sealed class IdempotencyFilter(int cacheTimeInMinutes = 60, ILogger<Ide
         logger?.LogIdempotencyHit(key);
         return new IdempotentResult(cached.StatusCode, cached.Json);
     }
-#pragma warning restore CA1873
 
     private static async Task<string> ComputeBodyHashAsync(HttpRequest request)
     {

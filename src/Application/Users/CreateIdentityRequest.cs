@@ -1,4 +1,4 @@
-﻿namespace FixNet.Application.Abstractions;
+﻿namespace FixNet.Application.Users;
 
 public record CreateIdentityRequest(
     string Email,

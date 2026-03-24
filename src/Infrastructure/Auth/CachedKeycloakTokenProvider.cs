@@ -4,36 +4,33 @@ using Microsoft.Extensions.Options;
 
 namespace FixNet.Infrastructure.Auth;
 
-internal sealed class CachedKeycloakTokenProvider(
-    IHttpClientFactory httpClientFactory,
+internal sealed class KeycloakTokenProvider(
+    HttpClient httpClient,
     IOptions<KeycloakSettings> settings,
-    TimeProvider timeProvider,
-    ILogger<CachedKeycloakTokenProvider> logger) : IDisposable
+    ILogger<KeycloakTokenProvider> logger,
+    KeycloakTokenCache cache) : IDisposable
 {
     private readonly KeycloakSettings _settings = settings.Value;
-    private string? _cachedToken;
-    private DateTimeOffset _expiresAt = DateTimeOffset.MinValue;
     private readonly SemaphoreSlim _semaphore = new(1, 1);
 
     public async Task<string> GetTokenAsync(CancellationToken ct)
-
     {
-        if (_cachedToken is not null && timeProvider.GetUtcNow() < _expiresAt)
-            return _cachedToken;
+        var cached = cache.GetToken();
+
+        if (cached is not null)
+            return cached;
 
         await _semaphore.WaitAsync(ct);
 
         try
         {
-            if (_cachedToken is not null && timeProvider.GetUtcNow() < _expiresAt)
-                return _cachedToken;
+            if (cached is not null)
+                return cached;
 
             logger.LogInformation("Refreshing Keycloak admin token for realm: {Realm}", _settings.Realm);
 
-            var httpClient = httpClientFactory.CreateClient(nameof(CachedKeycloakTokenProvider));
-
             var response = await httpClient.PostAsync(
-                $"{_settings.BaseUrl}/realms/{_settings.Realm}" +
+                $"/realms/{_settings.Realm}" +
                 "/protocol/openid-connect/token",
                 new FormUrlEncodedContent(new Dictionary<string, string>
                 {
@@ -56,10 +53,8 @@ internal sealed class CachedKeycloakTokenProvider(
                 "Keycloak token endpoint returned empty or invalid response.",
                 IdentityProviderErrorCode.Unavailable);
 
-            _cachedToken = tokenResponse.AccessToken;
-            _expiresAt = timeProvider.GetUtcNow().AddSeconds(tokenResponse.ExpiresIn - 30);
-
-            return _cachedToken;
+            cache.SetToken(tokenResponse.AccessToken, tokenResponse.ExpiresIn);
+            return tokenResponse.AccessToken;
         }
         finally
         {

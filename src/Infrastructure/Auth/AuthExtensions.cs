@@ -1,6 +1,7 @@
 ﻿using FixNet.Application.Users.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Polly;
 
 namespace FixNet.Infrastructure.Auth;
@@ -12,15 +13,21 @@ public static class AuthExtensions
         services.Configure<KeycloakSettings>(configuration.GetSection(KeycloakSettings.SectionName));
 
         services.AddSingleton(TimeProvider.System);
-        services.AddHttpClient(nameof(CachedKeycloakTokenProvider), client => {
+        services.AddSingleton<KeycloakTokenCache>();
+
+        services.AddHttpClient<KeycloakTokenProvider>((sp, client) =>
+            {
+                var settings = sp.GetRequiredService<IOptions<KeycloakSettings>>().Value;
+                client.BaseAddress = new Uri(settings.BaseUrl);
                 client.Timeout = TimeSpan.FromSeconds(10);
             })
             .AddStandardResilienceHandler();
-        services.AddSingleton<CachedKeycloakTokenProvider>(); 
         services.AddTransient<KeycloakAuthHandler>();
 
-        services.AddHttpClient<IExternalIdentityProvider, KeycloakIdentityProvider>(client =>
+        services.AddHttpClient<IExternalIdentityProvider, KeycloakIdentityProvider>((sp, client) =>
             {
+                var settings = sp.GetRequiredService<IOptions<KeycloakSettings>>().Value;
+                client.BaseAddress = new Uri(settings.BaseUrl);
                 client.Timeout = TimeSpan.FromSeconds(30);
             })
             .AddHttpMessageHandler<KeycloakAuthHandler>()

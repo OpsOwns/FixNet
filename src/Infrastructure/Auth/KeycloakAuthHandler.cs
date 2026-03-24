@@ -2,7 +2,7 @@
 
 namespace FixNet.Infrastructure.Auth;
 
-internal sealed class KeycloakAuthHandler(CachedKeycloakTokenProvider tokenProvider)
+internal sealed class KeycloakAuthHandler(KeycloakTokenProvider tokenProvider)
     : DelegatingHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(

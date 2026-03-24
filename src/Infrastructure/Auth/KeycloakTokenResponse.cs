@@ -2,8 +2,7 @@
 
 namespace FixNet.Infrastructure.Auth;
 
-internal class KeycloakTokenResponse
-
+public class KeycloakTokenResponse
 {
     [JsonPropertyName("access_token")]
     public string AccessToken { get; init; } = string.Empty;

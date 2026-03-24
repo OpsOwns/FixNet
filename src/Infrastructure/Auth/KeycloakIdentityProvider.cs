@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using FixNet.Application.Abstractions;
+using FixNet.Application.Users;
 using FixNet.Application.Users.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -43,15 +43,29 @@ internal sealed class KeycloakIdentityProvider(
                            "Keycloak did not return Location header",
                            IdentityProviderErrorCode.Unknown);
 
-
         var keycloakUserId = new Uri(location).Segments.Last();
 
-        logger.LogInformation(
-            "User created in Keycloak: {Email} → {KeycloakId}",
-            request.Email, keycloakUserId);
+        logger.LogInformation("User created  {Email}", request.Email);
 
         return keycloakUserId;
     }
+
+    public async Task AssignRoleAsync(string userId, string roleName, CancellationToken ct)
+    {
+        var roleResponse = await httpClient.GetAsync($"/admin/realms/{settings.Value.Realm}/roles/{roleName}", ct);
+        await HandleErrorResponse(roleResponse, "GetRole", roleName);
+
+        var role = await roleResponse.Content.ReadFromJsonAsync<RoleDto>(ct);
+
+        var assignResponse = await httpClient.PostAsJsonAsync(
+            $"/admin/realms/{settings.Value.Realm}/users/{userId}/role-mappings/realm",
+            new[] { role },
+            ct);
+
+        await HandleErrorResponse(assignResponse, "AssignRole", userId);
+    }
+
+    private sealed record RoleDto(string Id, string Name);
 
     public async Task DeleteUserAsync(
         string externalUserId, CancellationToken ct = default)
@@ -79,12 +93,14 @@ internal sealed class KeycloakIdentityProvider(
         if (response.IsSuccessStatusCode)
             return;
 
-        var body = await response.Content.ReadAsStringAsync();
 
-        logger.LogError(
-            "Keycloak {Operation} failed for {Context}. Status: {Status}, Body: {Body}",
-            operation, context, response.StatusCode, body);
+        if (operation != "CreateUser" && logger.IsEnabled(LogLevel.Debug))
+        {
+            var body = await response.Content.ReadAsStringAsync();
+            logger.LogDebug("Keycloak Error Body: {Body}", body);
+        }
 
+        logger.LogError("Keycloak {Operation} failed for {Context}. Status: {StatusCode}", operation, context, response.StatusCode);
 
         var errorCode = response.StatusCode switch
         {
@@ -98,13 +114,12 @@ internal sealed class KeycloakIdentityProvider(
         };
 
         throw new IdentityProviderException(
-            $"Keycloak {operation} failed: {response.StatusCode}. {body}",
+            $"Keycloak {operation} failed: {response.StatusCode}",
             errorCode);
     }
 
-
     private string UsersEndpoint() =>
-        $"{settings.Value.BaseUrl}/admin/realms/{settings.Value.Realm}/users";
+        $"/admin/realms/{settings.Value.Realm}/users";
 
     private string UserEndpoint(string userId) =>
         $"{UsersEndpoint()}/{userId}";
