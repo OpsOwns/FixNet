@@ -6,7 +6,7 @@ using Polly;
 
 namespace FixNet.Infrastructure.Auth;
 
-public static class AuthExtensions
+public static class Extensions
 {
     public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
     {
