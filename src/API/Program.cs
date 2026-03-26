@@ -2,6 +2,7 @@ using FixNet.API.Utilities;
 using FixNet.Application.Users;
 using FixNet.Application.Users.Abstractions;
 using FixNet.Infrastructure;
+using FixNet.Infrastructure.Persistence;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
@@ -13,6 +14,11 @@ builder.Services
     .AddRateLimiter(options => options.AddFixNetPolicy())
     .AddExceptionHandler<GlobalExceptionHandler>()
     .AddProblemDetails();
+
+builder.Services.AddHealthChecks()
+    .AddRedis(builder.Configuration["Redis:ConnectionString"]
+              ?? throw new InvalidOperationException("Redis connection string is missing"), name: "redis")
+    .AddDbContextCheck<FixNetDbContext>(name: "database");
 
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 
@@ -30,6 +36,8 @@ else
 {
     app.UseHttpsRedirection();
 }
+
+await app.Services.ApplyMigrationsAsync();
 
 app.MapHealthChecks("/healthy", new HealthCheckOptions
 {

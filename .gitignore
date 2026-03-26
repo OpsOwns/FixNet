@@ -400,3 +400,5 @@ FodyWeavers.xsd
 src/Api/Api.http
 .env
 *.http
+
+/src/Infrastructure/Persistence/Migrations/
