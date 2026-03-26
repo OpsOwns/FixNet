@@ -1,23 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FixNet.Domain.Base;
 
-namespace FixNet.Domain;
-
-public readonly record struct UserId(Guid Value)
-{
-    public static UserId Empty => new(Guid.Empty);
-    public static UserId Create() => new(Guid.CreateVersion7());
-
-    public override string ToString() => Value.ToString();
-}
-
-public enum Role
-{
-    Client = 1,
-    Technic = 2,
-    Manager = 3,
-    Admin = 4
-}
+namespace FixNet.Domain.Users;
 
 public sealed class Email : ValueObject
 {
@@ -45,16 +29,5 @@ public sealed class Email : ValueObject
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Value;
-    }
-}
-
-public class User
-{
-    public UserId UserId { get; private set; }
-    public Role Role { get; private set; }
-
-    public void Hydrate(UserId userId)
-    {
-        UserId = userId;
     }
 }

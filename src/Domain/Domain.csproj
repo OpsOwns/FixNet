@@ -3,6 +3,7 @@
     <PropertyGroup>
         <AssemblyName>FixNet.Domain</AssemblyName>
         <RootNamespace>FixNet.Domain</RootNamespace>
+        <InternalsVisibleTo>FixNet.Infrastructure</InternalsVisibleTo>
     </PropertyGroup>
 
 </Project>
