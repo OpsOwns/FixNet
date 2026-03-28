@@ -1,0 +1,58 @@
+﻿version: '3.8'
+name: fixNet
+
+services:
+  fixNet.api:
+    container_name: fixnet-api
+    image: api
+    build:
+      context: .
+      dockerfile: src/API/Dockerfile
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=fixNet.db;Database=FixNetDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True
+      - Redis__ConnectionString=fixNet.redis:6379
+      - Keycloak__AuthServerUrl=http://fixnet.keycloak
+    depends_on:
+      fixNet.db:
+        condition: service_healthy
+      fixNet.redis:
+        condition: service_healthy
+  
+  fixNet.redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  fixNet.keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    command: start-dev
+    ports:
+      - "8081:8080"
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+  
+  fixNet.db:
+    container_name: fixNet.db
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - SA_PASSWORD=${SA_PASSWORD}
+      - ACCEPT_EULA=Y
+    ports:
+      - "1433:1433"
+    volumes:
+      - net-db:/var/opt/mssql
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-U", "sa", "-P", "${SA_PASSWORD}", "-Q", "SELECT 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  net-db:
+  

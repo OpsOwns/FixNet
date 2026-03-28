@@ -4,6 +4,7 @@
         <AssemblyName>FixNet.API</AssemblyName>
         <RootNamespace>FixNet.API</RootNamespace>
         <UserSecretsId>b663613f-34e9-4dfc-b268-f2fcabd3ad8e</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -20,6 +21,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Content Include="..\..\.dockerignore">
+          <Link>.dockerignore</Link>
+        </Content>
         <None Update="Properties\launchSettings.json" Visible="false"/>
         <Content Update="appsettings.Development.json" DependentUpon="appsettings.json"/>
     </ItemGroup>
