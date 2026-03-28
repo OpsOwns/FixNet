@@ -12,23 +12,23 @@ internal sealed class IdempotencyFilter(int cacheTimeInMinutes = 60, ILogger<Ide
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
-    
+
     public async ValueTask<object?> InvokeAsync(
         EndpointFilterInvocationContext context,
         EndpointFilterDelegate next)
     {
         var request = context.HttpContext.Request;
 
-        if (!request.Headers.TryGetValue("Idempotency-Key", out var idempotencyKey) || string.IsNullOrWhiteSpace(idempotencyKey))
+        if (!request.Headers.TryGetValue("X-Idempotency-Key", out var idempotencyKey) || string.IsNullOrWhiteSpace(idempotencyKey))
         {
-            return Results.BadRequest("Missing Idempotency-Key header");
+            return Results.BadRequest("Missing X-Idempotency-Key header");
         }
 
         var key = idempotencyKey.ToString();
 
         if (key.Length > 100)
         {
-            return Results.BadRequest("Idempotency-Key too long");
+            return Results.BadRequest("X-Idempotency-Key too long");
         }
 
         var bodyHash = await ComputeBodyHashAsync(request);

@@ -34,6 +34,12 @@ public static class DbMigrationExtensions
 
         await pipeline.ExecuteAsync(async ct =>
         {
+            var pendingMigrations = await context.Database.GetPendingMigrationsAsync(ct);
+            if (!pendingMigrations.Any())
+            {
+                return;
+            }
+
             logger.LogInformation("Applying database migrations...");
             await context.Database.MigrateAsync(ct);
             logger.LogInformation("Database migration successful.");

@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using FixNet.Application.Users;
-using FixNet.Application.Users.Abstractions;
+using FixNet.Application.Base;
+using FixNet.Application.Base.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -13,7 +13,7 @@ internal sealed class KeycloakIdentityProvider(
     ILogger<KeycloakIdentityProvider> logger)
     : IExternalIdentityProvider
 {
-    public async Task<string> CreateUserAsync(CreateIdentityRequest request, CancellationToken ct = default)
+    public async Task<string> CreateUserAsync(ExternalIdentity request, CancellationToken ct = default)
     {
         var payload = new
         {

@@ -17,7 +17,7 @@ public class UserEntityConfiguration : IEntityTypeConfiguration<UserEntity>
 
         builder.Property(u => u.Type)
             .IsRequired()
-            .HasMaxLength(50);
+            .HasMaxLength(50).HasColumnName("UserRole");
 
         builder.Property(u => u.FirstName)
             .IsRequired()

@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Reflection;
+using FixNet.Domain.Base;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -30,6 +32,12 @@ public static class Extensions
             options.EnableSensitiveDataLogging();
             options.EnableDetailedErrors();
         });
+
+        services.Scan(s => s.FromAssemblies(Assembly.GetExecutingAssembly())
+            .AddClasses(c => c.AssignableTo<IRepository>(), false)
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
+
 
         return services;
     }

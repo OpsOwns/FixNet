@@ -1,4 +1,5 @@
-﻿using FixNet.Application.Users.Abstractions;
+﻿using FixNet.Application.Base;
+using FixNet.Application.Base.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

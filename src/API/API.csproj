@@ -20,10 +20,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Endpoints\"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <None Update="Properties\launchSettings.json" Visible="false"/>
         <Content Update="appsettings.Development.json" DependentUpon="appsettings.json"/>
     </ItemGroup>

@@ -1,4 +1,6 @@
+using FixNet.API.Endpoints;
 using FixNet.API.Utilities;
+using FixNet.Application;
 using FixNet.Infrastructure;
 using FixNet.Infrastructure.Persistence;
 using HealthChecks.UI.Client;
@@ -18,6 +20,7 @@ builder.Services.AddHealthChecks()
               ?? throw new InvalidOperationException("Redis connection string is missing"), name: "redis")
     .AddDbContextCheck<FixNetDbContext>(name: "database");
 
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
@@ -40,6 +43,8 @@ app.MapHealthChecks("/healthy", new HealthCheckOptions
 {
     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
 });
+
+app.AddEndpoints();
 
 app.MapGet("/", () => Results.Content("Hello from FixNet API - 1.0", "text/plain"));
 

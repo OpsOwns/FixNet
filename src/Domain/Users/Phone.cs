@@ -29,6 +29,8 @@ public sealed partial class Phone : ValueObject
         yield return Value;
     }
 
+    public static implicit operator string(Phone phone) => phone.Value;
+
     [GeneratedRegex(Pattern)]
     private static partial Regex PhoneRegex();
 }

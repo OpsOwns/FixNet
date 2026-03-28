@@ -24,6 +24,8 @@ public sealed class Email : ValueObject
         return new Email(email);
     }
 
+    public static implicit operator string(Email email) => email.Value;
+
     public override string ToString() => Value;
 
     protected override IEnumerable<object> GetEqualityComponents()
