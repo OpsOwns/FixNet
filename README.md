@@ -7,7 +7,7 @@ A robust service management system built with **.NET 10**, focusing on **Domain-
 - **Architecture:** Clean Architecture, CQRS
 - **Persistence:** SQL Server + Entity Framework Core
 - **Identity:** External Identity Provider Integration (Keycloak/Auth0)
-- **Resilience:** Polly (Resilience Pipelines for Migrations)
+- **Resilience:** Resilience (Resilience Pipelines for Migrations)
 - **Communication:** Minimal APIs
 - **Validation:** Domain-level Value Objects & RFC 7231 Problem Details
 
