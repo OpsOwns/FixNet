@@ -11,7 +11,7 @@ internal sealed class UserRepository(FixNetDbContext dbContext) : IUserRepositor
 
     public async Task CreateUserAsync(User user, CancellationToken cancellationToken)
     {
-        var userEntity = new UserEntity()
+        var userEntity = new UserEntity
         {
             Email = user.Email.Value,
             ExternalId = user.ExternalId.Value,
@@ -22,6 +22,7 @@ internal sealed class UserRepository(FixNetDbContext dbContext) : IUserRepositor
             PhoneNumber = user.PhoneNumber.Value,
             Type = user.Type.ToString()
         };
+        userEntity.AddDomainEvents(user.Events);
 
         await _userEntities.AddAsync(userEntity, cancellationToken);
         await dbContext.SaveChangesAsync(cancellationToken);

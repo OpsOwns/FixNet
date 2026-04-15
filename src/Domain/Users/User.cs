@@ -1,6 +1,9 @@
-﻿namespace FixNet.Domain.Users;
+﻿using FixNet.Domain.Base;
+using FixNet.Domain.Users.Events;
 
-public class User
+namespace FixNet.Domain.Users;
+
+public class User : AggregateRoot
 {
     public UserId Id { get; private set; }
     public ExternalId ExternalId { get; private set; }
@@ -26,6 +29,8 @@ public class User
         Email = email;
         PhoneNumber = phoneNumber;
         IsAvailable = isAvailable;
+
+        RaiseDomainEvent(new UserCreatedDomainEvent(externalId.Value));
     }
 
     public static User Create(ExternalId externalId, UserType type, FirstName firstName, LastName lastName, Email email, Phone phone) =>

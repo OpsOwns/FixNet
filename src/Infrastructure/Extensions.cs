@@ -1,4 +1,6 @@
 ﻿using FixNet.Infrastructure.Auth;
+using FixNet.Infrastructure.EventDispatcher;
+using FixNet.Infrastructure.OutBox;
 using FixNet.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,8 +14,11 @@ public static class Extensions
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddAuth(configuration);
         services.AddDatabase(configuration, environment);
+
+        services.AddHostedService<OutboxProcessor>();
 
         return services;
     }

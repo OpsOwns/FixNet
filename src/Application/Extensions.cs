@@ -1,6 +1,5 @@
-﻿using FixNet.Application.Base;
+﻿using System.Reflection;
 using FixNet.Application.Base.Abstractions;
-using FixNet.Application.Features.Clients.CreateClient;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FixNet.Application;
@@ -9,7 +8,17 @@ public static class Extensions
 {
     public static IServiceCollection AddApplication(this IServiceCollection service)
     {
-        service.AddScoped<ICommandHandler<CreateClientCommand>, CreateClientHandler>();
+        service.Scan(scan => scan
+            .FromAssemblies(Assembly.GetExecutingAssembly())
+            .AddClasses(classes => classes.AssignableTo(typeof(IDomainEventHandler<>)), publicOnly: false)
+            .AsImplementedInterfaces()
+            .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(ICommandHandler<>)), publicOnly: false)
+            .AsImplementedInterfaces()
+            .WithScopedLifetime()
+            .AddClasses(classes => classes.AssignableTo(typeof(IQueryHandler<,>)), publicOnly: false)
+            .AsImplementedInterfaces()
+            .WithScopedLifetime());
 
         return service;
     }

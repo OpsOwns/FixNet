@@ -1,6 +1,8 @@
-﻿namespace FixNet.Infrastructure.Persistence.Entities;
+﻿using FixNet.Domain.Base;
 
-public class UserEntity
+namespace FixNet.Infrastructure.Persistence.Entities;
+
+public class UserEntity : AggregateRoot
 {
     public Guid Id { get; set; }
     public string ExternalId { get; set; } = string.Empty;
@@ -10,4 +12,5 @@ public class UserEntity
     public string Email { get; set; } = string.Empty;
     public string? PhoneNumber { get; set; }
     public bool IsAvailable { get; set; }
+    
 }

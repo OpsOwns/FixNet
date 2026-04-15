@@ -9,6 +9,6 @@
         <AnalysisLevel>latest-Recommended</AnalysisLevel>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <DefaultItemExcludes>$(DefaultItemExcludes);Properties\**</DefaultItemExcludes>
-        <NoWarn>$(NoWarn);CA1848;CA1716;CA1000</NoWarn>
+        <NoWarn>$(NoWarn);CA1848;CA1716;CA1000;CA1711</NoWarn>
     </PropertyGroup>
 </Project>

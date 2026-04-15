@@ -1,4 +1,4 @@
-﻿using FixNet.API.Utilities;
+using FixNet.API.Utilities;
 using FixNet.Application.Base.Abstractions;
 using FixNet.Application.Features.Clients.CreateClient;
 

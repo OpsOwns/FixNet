@@ -22,7 +22,8 @@ internal sealed class KeycloakIdentityProvider(
             firstName = request.FirstName,
             lastName = request.LastName,
             enabled = true,
-            emailVerified = false,
+            //TODO for now make it available later we implement activation 
+            emailVerified = true,
             credentials = new[]
             {
                 new
@@ -50,7 +51,17 @@ internal sealed class KeycloakIdentityProvider(
         return keycloakUserId;
     }
 
-    public async Task AssignRoleAsync(string userId, string roleName, CancellationToken ct)
+    public async Task SendActivationEmailAsync(string userId, CancellationToken ct = default)
+    {
+        var response = await httpClient.PutAsync(
+            $"{UserEndpoint(userId)}/send-verify-email",
+            null,
+            ct);
+
+        await HandleErrorResponse(response, "SendActivationEmail", userId);
+    }
+
+    public async Task AssignRoleAsync(string userId, string roleName, CancellationToken ct = default)
     {
         var roleResponse = await httpClient.GetAsync($"/admin/realms/{settings.Value.Realm}/roles/{roleName}", ct);
         await HandleErrorResponse(roleResponse, "GetRole", roleName);
