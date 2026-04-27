@@ -1,5 +1,5 @@
-﻿using FixNet.Application.Base;
-using FixNet.Application.Base.Abstractions;
+﻿using FixNet.Application.Common.Abstractions;
+using FixNet.Infrastructure.Auth.Keycloak;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -25,7 +25,7 @@ public static class Extensions
             .AddStandardResilienceHandler();
         services.AddTransient<KeycloakAuthHandler>();
 
-        services.AddHttpClient<IExternalIdentityProvider, KeycloakIdentityProvider>((sp, client) =>
+        services.AddHttpClient<IKeycloakUserService, KeycloakUserService>((sp, client) =>
             {
                 var settings = sp.GetRequiredService<IOptions<KeycloakSettings>>().Value;
                 client.BaseAddress = new Uri(settings.BaseUrl);

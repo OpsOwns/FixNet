@@ -1,4 +1,4 @@
-﻿namespace FixNet.Application.Base.Abstractions;
+﻿namespace FixNet.Application.Common.Abstractions;
 
 //Marker interfaces
 public interface IQuery<T> : IQuery;

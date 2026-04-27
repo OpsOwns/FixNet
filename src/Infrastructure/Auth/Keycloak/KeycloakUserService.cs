@@ -1,17 +1,18 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using FixNet.Application.Base;
-using FixNet.Application.Base.Abstractions;
+using FixNet.Application;
+using FixNet.Application.Common;
+using FixNet.Application.Common.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FixNet.Infrastructure.Auth;
+namespace FixNet.Infrastructure.Auth.Keycloak;
 
-internal sealed class KeycloakIdentityProvider(
+internal sealed class KeycloakUserService(
     HttpClient httpClient,
     IOptions<KeycloakSettings> settings,
-    ILogger<KeycloakIdentityProvider> logger)
-    : IExternalIdentityProvider
+    ILogger<KeycloakUserService> logger)
+    : IKeycloakUserService
 {
     public async Task<string> CreateUserAsync(ExternalIdentity request, CancellationToken ct = default)
     {
@@ -32,7 +33,8 @@ internal sealed class KeycloakIdentityProvider(
                     value = request.Password,
                     temporary = false
                 }
-            }
+            },
+            attributes = OptionalPhone(),
         };
 
         var response = await httpClient.PostAsJsonAsync(UsersEndpoint(), payload, ct);
@@ -49,6 +51,21 @@ internal sealed class KeycloakIdentityProvider(
         logger.LogInformation("User created  {Email}", request.Email);
 
         return keycloakUserId;
+
+        object? OptionalPhone() => string.IsNullOrWhiteSpace(request.Phone)
+            ? null
+            : new { phone = new[] { request.Phone } };
+    }
+
+    public async Task<bool> EmailExistsAsync(string email, CancellationToken ct = default)
+    {
+        var normalized = Uri.EscapeDataString(email.Trim().ToLowerInvariant());
+        var response = await httpClient.GetAsync(
+            $"/admin/realms/{settings.Value.Realm}/users?email={normalized}&exact=true", ct);
+        response.EnsureSuccessStatusCode();
+
+        var users = await response.Content.ReadFromJsonAsync<List<object>>(cancellationToken: ct);
+        return users?.Count > 0;
     }
 
     public async Task SendActivationEmailAsync(string userId, CancellationToken ct = default)
@@ -61,16 +78,17 @@ internal sealed class KeycloakIdentityProvider(
         await HandleErrorResponse(response, "SendActivationEmail", userId);
     }
 
-    public async Task AssignRoleAsync(string userId, string roleName, CancellationToken ct = default)
+    public async Task AssignRoleAsync(string userId, Role role, CancellationToken ct = default)
     {
+        const string roleName = nameof(role);
         var roleResponse = await httpClient.GetAsync($"/admin/realms/{settings.Value.Realm}/roles/{roleName}", ct);
         await HandleErrorResponse(roleResponse, "GetRole", roleName);
 
-        var role = await roleResponse.Content.ReadFromJsonAsync<RoleDto>(ct);
+        var roleKeyCloak = await roleResponse.Content.ReadFromJsonAsync<RoleDto>(ct);
 
         var assignResponse = await httpClient.PostAsJsonAsync(
             $"/admin/realms/{settings.Value.Realm}/users/{userId}/role-mappings/realm",
-            new[] { role },
+            new[] { roleKeyCloak },
             ct);
 
         await HandleErrorResponse(assignResponse, "AssignRole", userId);

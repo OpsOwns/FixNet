@@ -1,4 +1,4 @@
-﻿namespace FixNet.Application.Base.Abstractions;
+﻿namespace FixNet.Application.Common.Abstractions;
 
 public interface IQueryHandler<in TQuery, TResult> where TQuery : class, IQuery<TResult>
 {

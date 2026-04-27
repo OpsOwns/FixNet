@@ -1,4 +1,4 @@
-﻿namespace FixNet.Infrastructure.Auth;
+﻿namespace FixNet.Infrastructure.Auth.Keycloak;
 
 public sealed class KeycloakTokenCache(TimeProvider timeProvider)
 {
@@ -11,10 +11,7 @@ public sealed class KeycloakTokenCache(TimeProvider timeProvider)
         if (current is null)
             return null;
 
-        if (timeProvider.GetUtcNow() >= current.ExpiresAt)
-            return null;
-
-        return current.AccessToken;
+        return timeProvider.GetUtcNow() >= current.ExpiresAt ? null : current.AccessToken;
     }
 
     public void SetToken(string token, int expiresInSeconds)

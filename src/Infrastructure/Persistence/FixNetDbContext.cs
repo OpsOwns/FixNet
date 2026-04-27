@@ -1,13 +1,13 @@
 ﻿using System.Text.Json;
+using FixNet.Application.Common.Abstractions;
 using FixNet.Domain.Base;
 using FixNet.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FixNet.Infrastructure.Persistence;
 
-public class FixNetDbContext(DbContextOptions<FixNetDbContext> options) : DbContext(options)
+public class FixNetDbContext(DbContextOptions<FixNetDbContext> options) : DbContext(options), IAppDbContext
 {
-    public DbSet<UserEntity> Users => Set<UserEntity>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

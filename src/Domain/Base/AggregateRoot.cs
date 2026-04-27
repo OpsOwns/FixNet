@@ -4,6 +4,7 @@ public abstract class AggregateRoot
 {
     private readonly List<IDomainEvent> _domainEvents = [];
     public IReadOnlyList<IDomainEvent> Events => _domainEvents.AsReadOnly();
+    public bool HasEvents => _domainEvents.Count != 0;
 
     protected void RaiseDomainEvent(IDomainEvent domainEvent)
     {

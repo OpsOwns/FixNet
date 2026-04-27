@@ -1,6 +1,6 @@
 ﻿using FixNet.Domain.Base;
 
-namespace FixNet.Application.Base.Abstractions;
+namespace FixNet.Application.Common.Abstractions;
 
 public interface ICommandHandler<in T> where T : class, ICommand
 {

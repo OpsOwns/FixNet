@@ -1,4 +1,4 @@
-﻿using FixNet.Application.Base.Abstractions;
+﻿using FixNet.Application.Common.Abstractions;
 using FixNet.Domain.Base;
 using Microsoft.Extensions.DependencyInjection;
 

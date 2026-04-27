@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using FixNet.Application.Base.Abstractions;
+using FixNet.Application.Common.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FixNet.Application;

@@ -1,6 +1,6 @@
 ﻿using FixNet.Domain.Base;
 
-namespace FixNet.Application.Base.Abstractions;
+namespace FixNet.Application.Common.Abstractions;
 
 public interface IDomainEventHandler<in TEvent> where TEvent : IDomainEvent
 {

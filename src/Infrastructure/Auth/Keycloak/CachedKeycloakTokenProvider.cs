@@ -1,13 +1,11 @@
 ﻿using System.Net.Http.Json;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FixNet.Infrastructure.Auth;
+namespace FixNet.Infrastructure.Auth.Keycloak;
 
 internal sealed class KeycloakTokenProvider(
     HttpClient httpClient,
     IOptions<KeycloakSettings> settings,
-    ILogger<KeycloakTokenProvider> logger,
     KeycloakTokenCache cache) : IDisposable
 {
     private readonly KeycloakSettings _settings = settings.Value;
@@ -26,8 +24,6 @@ internal sealed class KeycloakTokenProvider(
         {
             if (cached is not null)
                 return cached;
-
-            logger.LogInformation("Refreshing Keycloak admin token for realm: {Realm}", _settings.Realm);
 
             var response = await httpClient.PostAsync(
                 $"/realms/{_settings.Realm}" +
