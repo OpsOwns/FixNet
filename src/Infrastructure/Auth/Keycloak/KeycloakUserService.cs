@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using FixNet.Application;
 using FixNet.Application.Common;
 using FixNet.Application.Common.Abstractions;
+using FixNet.Application.Features.Users;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -78,9 +79,9 @@ internal sealed class KeycloakUserService(
         await HandleErrorResponse(response, "SendActivationEmail", userId);
     }
 
-    public async Task AssignRoleAsync(string userId, Role role, CancellationToken ct = default)
+    public async Task AssignRoleAsync(string userId, UserRole userRole, CancellationToken ct = default)
     {
-        const string roleName = nameof(role);
+        var roleName = userRole.Value;
         var roleResponse = await httpClient.GetAsync($"/admin/realms/{settings.Value.Realm}/roles/{roleName}", ct);
         await HandleErrorResponse(roleResponse, "GetRole", roleName);
 
@@ -112,7 +113,7 @@ internal sealed class KeycloakUserService(
         }
 
         await HandleErrorResponse(response, "DeleteUser", externalUserId);
-        logger.LogInformation(
+        logger.LogDebug(
             "User deleted from Keycloak: {Id}", externalUserId);
     }
 
@@ -136,7 +137,7 @@ internal sealed class KeycloakUserService(
             HttpStatusCode.Conflict => IdentityProviderErrorCode.Conflict,
             HttpStatusCode.NotFound => IdentityProviderErrorCode.NotFound,
             HttpStatusCode.Unauthorized => IdentityProviderErrorCode.Unauthorized,
-            HttpStatusCode.Forbidden => IdentityProviderErrorCode.Unauthorized,
+            HttpStatusCode.Forbidden => IdentityProviderErrorCode.Forbidden,
             _ when (int)response.StatusCode >= 500
                 => IdentityProviderErrorCode.Unavailable,
             _ => IdentityProviderErrorCode.Unknown

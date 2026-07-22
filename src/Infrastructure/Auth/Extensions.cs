@@ -13,7 +13,6 @@ public static class Extensions
     {
         services.Configure<KeycloakSettings>(configuration.GetSection(KeycloakSettings.SectionName));
 
-        services.AddSingleton(TimeProvider.System);
         services.AddSingleton<KeycloakTokenCache>();
 
         services.AddHttpClient<KeycloakTokenProvider>((sp, client) =>

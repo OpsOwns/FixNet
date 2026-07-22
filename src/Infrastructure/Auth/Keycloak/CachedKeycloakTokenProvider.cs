@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using FixNet.Application.Common;
 using Microsoft.Extensions.Options;
 
 namespace FixNet.Infrastructure.Auth.Keycloak;

@@ -20,6 +20,8 @@ public static class Extensions
 
         services.AddHostedService<OutboxProcessor>();
 
+        services.AddSingleton(TimeProvider.System);
+
         return services;
     }
 }

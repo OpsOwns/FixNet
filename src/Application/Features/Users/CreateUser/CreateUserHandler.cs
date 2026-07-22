@@ -6,37 +6,48 @@ namespace FixNet.Application.Features.Users.CreateUser;
 
 internal sealed class CreateUserHandler(IKeycloakUserService keycloakUserService, ILogger<CreateUserHandler> logger) : ICommandHandler<CreateUserCommand>
 {
-    public async Task<Result> HandleAsync(CreateUserCommand createUserCommand, CancellationToken cancellationToken = default)
+    public async Task<Result> HandleAsync(CreateUserCommand command, CancellationToken cancellationToken = default)
     {
-        var keycloakUserId = KeycloakUserId.Empty;
+        if (await keycloakUserService.EmailExistsAsync(command.Email, cancellationToken))
+        {
+            return Result.Failure(Error.New("User.EmailAlreadyExists", $"Email '{command.Email}' already in use"));
+        }
+
+        var identity = new ExternalIdentity(command.Email, command.Password,
+            command.FirstName, command.LastName, command.Phone);
+
+        KeycloakUserId keycloakUserId = await keycloakUserService.CreateUserAsync(identity, cancellationToken);
+
         try
         {
-            if (await keycloakUserService.EmailExistsAsync(createUserCommand.Email, cancellationToken))
-            {
-                return Result.Failure(Error.New("User.EmailAlreadyExists", $"Email '{createUserCommand.Email}' already in use"));
-            }
-
-            var identity = new ExternalIdentity(createUserCommand.Email, createUserCommand.Password,
-                createUserCommand.FirstName, createUserCommand.LastName, createUserCommand.Phone);
-
-            keycloakUserId = await keycloakUserService.CreateUserAsync(identity, cancellationToken);
-
-            await keycloakUserService.AssignRoleAsync(keycloakUserId.Value, createUserCommand.Role, cancellationToken);
-
-            return Result.Success();
+            await keycloakUserService.AssignRoleAsync(
+                keycloakUserId.Value,
+                command.Role,
+                cancellationToken);
         }
-        catch (Exception ex) when (ex is not OperationCanceledException)
+        catch
         {
-            logger.LogError(ex, "Failed to create user {Email}.", createUserCommand.Email);
+            await TryRollbackAsync(keycloakUserId);
+            throw;
+        }
 
-            if (keycloakUserId.IsEmpty)
-            {
-                await keycloakUserService.DeleteUserAsync(keycloakUserId.Value, cancellationToken);
-            }
+        return Result.Success();
+    }
 
-            return Result.Failure(Error.New(
-                "User.CreationFailed",
-                "Failed to create user account"));
+    private async Task TryRollbackAsync(KeycloakUserId keycloakUserId)
+    {
+        try
+        {
+            await keycloakUserService.DeleteUserAsync(
+                keycloakUserId.Value,
+                CancellationToken.None);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(
+                ex,
+                "Failed to rollback Keycloak user {UserId}.",
+                keycloakUserId.Value);
         }
     }
 }

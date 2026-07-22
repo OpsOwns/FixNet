@@ -6,9 +6,9 @@
         <WarningsAsErrors>$(WarningsAsErrors);Nullable;CA</WarningsAsErrors>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <ImplicitUsings>enable</ImplicitUsings>
-        <AnalysisLevel>latest-Recommended</AnalysisLevel>
+        <EnableNETAnalyzers>true</EnableNETAnalyzers>
         <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
         <DefaultItemExcludes>$(DefaultItemExcludes);Properties\**</DefaultItemExcludes>
-        <NoWarn>$(NoWarn);CA1848;CA1716;CA1000;CA1711</NoWarn>
+        <NoWarn>$(NoWarn);CA1848;CA1716;CA1000;CA1711;CA1873</NoWarn>
     </PropertyGroup>
 </Project>

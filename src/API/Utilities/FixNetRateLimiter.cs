@@ -5,7 +5,7 @@ namespace FixNet.API.Utilities;
 
 public static class FixNetRateLimiter
 {
-    public const string PolicyName = "FixNetPolicy";
+    private const string PolicyName = "FixNetPolicy";
 
     public static void AddFixNetPolicy(this RateLimiterOptions options)
     {

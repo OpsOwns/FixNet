@@ -1,4 +1,4 @@
-﻿namespace FixNet.Infrastructure.Auth;
+﻿namespace FixNet.Application.Common;
 
 public class IdentityProviderException(
     string message,

@@ -1,4 +1,4 @@
-﻿namespace FixNet.Infrastructure.Auth;
+﻿namespace FixNet.Application.Common;
 
 public enum IdentityProviderErrorCode
 {
@@ -6,5 +6,6 @@ public enum IdentityProviderErrorCode
     Conflict,
     NotFound,
     Unauthorized,
-    Unavailable
+    Unavailable,
+    Forbidden
 }

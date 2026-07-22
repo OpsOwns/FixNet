@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FixNet.Infrastructure.Persistence;
 
-public class FixNetDbContext(DbContextOptions<FixNetDbContext> options) : DbContext(options), IAppDbContext
+public class FixNetDbContext(DbContextOptions<FixNetDbContext> options, TimeProvider timeProvider) : DbContext(options), IAppDbContext
 {
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
@@ -18,17 +18,25 @@ public class FixNetDbContext(DbContextOptions<FixNetDbContext> options) : DbCont
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
     {
+        var now = timeProvider.GetUtcNow();
+
         var domainEvents = ChangeTracker
             .Entries<AggregateRoot>()
             .SelectMany(x => x.Entity.Events)
             .Select(domainEvent => new OutboxMessage
             {
                 Id = Guid.NewGuid(),
-                OccurredOnUtc = DateTime.UtcNow,
-                Type = domainEvent.GetType().AssemblyQualifiedName!,
+                OccurredOnUtc = now,
+                Type = domainEvent.GetType().FullName ?? throw new InvalidOperationException(
+                    "Domain event type name is missing."),
                 Content = JsonSerializer.Serialize(domainEvent, domainEvent.GetType())
             })
             .ToList();
+
+        if (domainEvents.Count is 0)
+        {
+            return await base.SaveChangesAsync(cancellationToken);
+        }
 
         AddRange(domainEvents);
 
