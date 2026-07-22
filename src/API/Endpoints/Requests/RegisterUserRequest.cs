@@ -1,4 +1,4 @@
-﻿namespace FixNet.API.Requests;
+﻿namespace FixNet.API.Endpoints.Requests;
 
 public class RegisterUserRequest
 {

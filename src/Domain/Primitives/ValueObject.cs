@@ -1,4 +1,4 @@
-﻿namespace FixNet.Domain.Base;
+﻿namespace FixNet.Domain.Primitives;
 
 public abstract class ValueObject : IEquatable<ValueObject>
 {

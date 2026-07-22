@@ -1,4 +1,4 @@
-﻿namespace FixNet.Infrastructure.Auth.Keycloak;
+﻿namespace FixNet.Infrastructure.Auth;
 
 public class KeycloakSettings
 {

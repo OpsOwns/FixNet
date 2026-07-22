@@ -7,7 +7,7 @@ using FixNet.Application.Features.Users;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FixNet.Infrastructure.Auth.Keycloak;
+namespace FixNet.Infrastructure.Auth;
 
 internal sealed class KeycloakUserService(
     HttpClient httpClient,

@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using FixNet.Domain.Base;
+using FixNet.Domain.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

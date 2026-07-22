@@ -1,4 +1,6 @@
-﻿namespace FixNet.Domain.Base;
+﻿using FixNet.Domain.Abstractions;
+
+namespace FixNet.Domain.Primitives;
 
 public abstract class AggregateRoot
 {

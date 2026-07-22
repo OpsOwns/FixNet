@@ -1,5 +1,7 @@
 using FixNet.API.Endpoints;
-using FixNet.API.Utilities;
+using FixNet.API.Extensions;
+using FixNet.API.Middleware;
+using FixNet.API.RateLimiting;
 using FixNet.Application;
 using FixNet.Infrastructure;
 using FixNet.Infrastructure.Persistence;

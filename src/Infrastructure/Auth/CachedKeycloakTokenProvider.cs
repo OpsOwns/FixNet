@@ -2,7 +2,7 @@
 using FixNet.Application.Common;
 using Microsoft.Extensions.Options;
 
-namespace FixNet.Infrastructure.Auth.Keycloak;
+namespace FixNet.Infrastructure.Auth;
 
 internal sealed class KeycloakTokenProvider(
     HttpClient httpClient,

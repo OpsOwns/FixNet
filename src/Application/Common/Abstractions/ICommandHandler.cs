@@ -1,4 +1,4 @@
-﻿using FixNet.Domain.Base;
+﻿using FixNet.Domain.Primitives;
 
 namespace FixNet.Application.Common.Abstractions;
 

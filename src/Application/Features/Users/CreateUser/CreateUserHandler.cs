@@ -1,5 +1,5 @@
 ﻿using FixNet.Application.Common.Abstractions;
-using FixNet.Domain.Base;
+using FixNet.Domain.Primitives;
 using Microsoft.Extensions.Logging;
 
 namespace FixNet.Application.Features.Users.CreateUser;
@@ -16,12 +16,14 @@ internal sealed class CreateUserHandler(IKeycloakUserService keycloakUserService
         var identity = new ExternalIdentity(command.Email, command.Password,
             command.FirstName, command.LastName, command.Phone);
 
-        KeycloakUserId keycloakUserId = await keycloakUserService.CreateUserAsync(identity, cancellationToken);
+        var keycloakUserId = await keycloakUserService.CreateUserAsync(identity, cancellationToken);
+
+        await keycloakUserService.CreateUserAsync(identity, cancellationToken);
 
         try
         {
             await keycloakUserService.AssignRoleAsync(
-                keycloakUserId.Value,
+                keycloakUserId,
                 command.Role,
                 cancellationToken);
         }
@@ -34,12 +36,12 @@ internal sealed class CreateUserHandler(IKeycloakUserService keycloakUserService
         return Result.Success();
     }
 
-    private async Task TryRollbackAsync(KeycloakUserId keycloakUserId)
+    private async Task TryRollbackAsync(string keycloakUserId)
     {
         try
         {
             await keycloakUserService.DeleteUserAsync(
-                keycloakUserId.Value,
+                keycloakUserId,
                 CancellationToken.None);
         }
         catch (Exception ex)
@@ -47,7 +49,7 @@ internal sealed class CreateUserHandler(IKeycloakUserService keycloakUserService
             logger.LogError(
                 ex,
                 "Failed to rollback Keycloak user {UserId}.",
-                keycloakUserId.Value);
+                keycloakUserId);
         }
     }
 }

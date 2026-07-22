@@ -1,6 +1,6 @@
 ﻿using System.Net.Http.Headers;
 
-namespace FixNet.Infrastructure.Auth.Keycloak;
+namespace FixNet.Infrastructure.Auth;
 
 internal sealed class KeycloakAuthHandler(KeycloakTokenProvider tokenProvider)
     : DelegatingHandler

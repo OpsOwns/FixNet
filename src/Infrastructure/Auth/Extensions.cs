@@ -1,5 +1,4 @@
 ﻿using FixNet.Application.Common.Abstractions;
-using FixNet.Infrastructure.Auth.Keycloak;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Caching.Hybrid;
 
-namespace FixNet.API.Utilities;
+namespace FixNet.API.Filters;
 
 internal sealed class IdempotencyFilter(int cacheTimeInMinutes = 60, ILogger<IdempotencyFilter>? logger = null)
     : IEndpointFilter

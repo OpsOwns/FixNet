@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using FixNet.Domain.Base;
+using FixNet.Domain.Abstractions;
 using FixNet.Infrastructure.EventDispatcher;
 using FixNet.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;

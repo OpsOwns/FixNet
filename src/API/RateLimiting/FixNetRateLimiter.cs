@@ -1,7 +1,7 @@
 ﻿using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 
-namespace FixNet.API.Utilities;
+namespace FixNet.API.RateLimiting;
 
 public static class FixNetRateLimiter
 {

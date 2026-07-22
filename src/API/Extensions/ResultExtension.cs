@@ -1,6 +1,6 @@
-﻿using FixNet.Domain.Base;
+﻿using FixNet.Domain.Primitives;
 
-namespace FixNet.API.Utilities;
+namespace FixNet.API.Extensions;
 
 public static class ResultExtension
 {

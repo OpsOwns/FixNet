@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace FixNet.Infrastructure.Auth.Keycloak;
+namespace FixNet.Infrastructure.Auth;
 
 public class KeycloakTokenResponse
 {

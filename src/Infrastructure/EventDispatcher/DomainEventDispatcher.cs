@@ -1,5 +1,5 @@
 ﻿using FixNet.Application.Common.Abstractions;
-using FixNet.Domain.Base;
+using FixNet.Domain.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FixNet.Infrastructure.EventDispatcher;

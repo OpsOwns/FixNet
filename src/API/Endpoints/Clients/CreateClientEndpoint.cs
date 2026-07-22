@@ -1,4 +1,5 @@
-using FixNet.API.Utilities;
+using FixNet.API.Extensions;
+using FixNet.API.Filters;
 using FixNet.Application.Common.Abstractions;
 using FixNet.Application.Features.Users;
 using FixNet.Application.Features.Users.CreateUser;

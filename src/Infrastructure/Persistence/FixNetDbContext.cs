@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 using FixNet.Application.Common.Abstractions;
-using FixNet.Domain.Base;
+using FixNet.Domain.Primitives;
 using FixNet.Infrastructure.Persistence.Entities;
 using Microsoft.EntityFrameworkCore;
 

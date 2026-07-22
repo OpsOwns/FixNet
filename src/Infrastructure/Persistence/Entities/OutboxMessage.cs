@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
-using FixNet.Domain.Base;
+using FixNet.Domain.Abstractions;
 
 namespace FixNet.Infrastructure.Persistence.Entities;
 
