@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using FixNet.Application.Common.Abstractions;
 using FixNet.Domain.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -33,11 +34,7 @@ public static class Extensions
             options.EnableDetailedErrors();
         });
 
-        services.Scan(s => s.FromAssemblies(Assembly.GetExecutingAssembly())
-            .AddClasses(c => c.AssignableTo<IRepository>(), false)
-            .AsImplementedInterfaces()
-            .WithScopedLifetime());
-
+        services.AddScoped<IAggregateStore, AggregateStore>();
 
         return services;
     }

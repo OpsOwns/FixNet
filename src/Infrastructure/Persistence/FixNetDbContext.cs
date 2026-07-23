@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FixNet.Infrastructure.Persistence;
 
-public class FixNetDbContext(DbContextOptions<FixNetDbContext> options, TimeProvider timeProvider) : DbContext(options), IAppDbContext
+public class FixNetDbContext(DbContextOptions<FixNetDbContext> options, TimeProvider timeProvider) : DbContext(options)
 {
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
