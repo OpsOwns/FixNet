@@ -33,6 +33,10 @@
         <ProjectReference Include="..\Infrastructure\Infrastructure.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Endpoints\Clients\" />
+    </ItemGroup>
+
     <PropertyGroup>
         <WarningsNotAsErrors>NU1903</WarningsNotAsErrors>
         <NuGetAuditMode>direct</NuGetAuditMode>

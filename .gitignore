@@ -402,3 +402,4 @@ src/Api/Api.http
 *.http
 
 /src/Infrastructure/Persistence/Migrations/
+keycloak/realms/

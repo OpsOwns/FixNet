@@ -1,4 +1,3 @@
-using FixNet.Application.Common;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,18 +12,18 @@ public sealed class GlobalExceptionHandler(
         CancellationToken cancellationToken)
     {
         logger.LogError(
-            "FixNet Exception: {Message} at {Path}",
-            httpContext.Request.Path,
-            exception);
+            exception,
+            "FixNet Exception at {Path}",
+            httpContext.Request.Path);
 
         const string internalErrorUrl =
             "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1";
-
         const string badRequestUrl =
             "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.1";
-
         const string unauthorizedUrl =
             "https://datatracker.ietf.org/doc/html/rfc7235#section-3.1";
+        const string notFoundUrl =
+            "https://datatracker.ietf.org/doc/html/rfc7231#section-6.5.4";
 
         var (statusCode, title, type, detail) = exception switch
         {
@@ -48,18 +47,9 @@ public sealed class GlobalExceptionHandler(
             (
                 StatusCodes.Status404NotFound,
                 "Resource Not Found",
-                badRequestUrl,
+                notFoundUrl,
                 exception.Message
             ),
-
-            IdentityProviderException =>
-            (
-                StatusCodes.Status503ServiceUnavailable,
-                "Identity Provider Unavailable",
-                internalErrorUrl,
-                "Identity provider is temporarily unavailable."
-            ),
-
             _ =>
             (
                 StatusCodes.Status500InternalServerError,

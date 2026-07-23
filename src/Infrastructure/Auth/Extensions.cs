@@ -1,8 +1,6 @@
 ﻿using FixNet.Application.Common.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Polly;
 
 namespace FixNet.Infrastructure.Auth;
 
@@ -10,33 +8,16 @@ public static class Extensions
 {
     public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<KeycloakSettings>(configuration.GetSection(KeycloakSettings.SectionName));
-
-        services.AddSingleton<KeycloakTokenCache>();
-
-        services.AddHttpClient<KeycloakTokenProvider>((sp, client) =>
+        services.AddAuthentication()
+            .AddJwtBearer(options =>
             {
-                var settings = sp.GetRequiredService<IOptions<KeycloakSettings>>().Value;
-                client.BaseAddress = new Uri(settings.BaseUrl);
-                client.Timeout = TimeSpan.FromSeconds(10);
-            })
-            .AddStandardResilienceHandler();
-        services.AddTransient<KeycloakAuthHandler>();
-
-        services.AddHttpClient<IKeycloakUserService, KeycloakUserService>((sp, client) =>
-            {
-                var settings = sp.GetRequiredService<IOptions<KeycloakSettings>>().Value;
-                client.BaseAddress = new Uri(settings.BaseUrl);
-                client.Timeout = TimeSpan.FromSeconds(30);
-            })
-            .AddHttpMessageHandler<KeycloakAuthHandler>()
-            .AddStandardResilienceHandler(options =>
-            {
-                options.Retry.MaxRetryAttempts = 3;
-                options.Retry.Delay = TimeSpan.FromSeconds(2);
-                options.Retry.BackoffType = DelayBackoffType.Exponential;
+                options.Authority = configuration["Keycloak:Authority"];
+                options.Audience = configuration["Keycloak:Audience"];
             });
 
+        services.AddAuthorization();
+        services.AddHttpContextAccessor();
+        services.AddScoped<IIdentityContext, IdentityContext>();
         return services;
     }
 }
